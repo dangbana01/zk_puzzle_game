@@ -1,31 +1,38 @@
 use anyhow::Result;
 use std::io::{self, Write};
 
-// Mock verifier function that simulates ZK proof verification
 fn verify_puzzle_solution(puzzle: &str, solution: &str) -> bool {
-    // Simulate a zero-knowledge proof by checking if the solution hashes to a known value
-    // For now, use a simple placeholder: puzzle + solution must be equal to "rustzk"
-    puzzle == "rust" && solution == "zk"
+    match puzzle {
+        "rust" => solution == "zk",
+        "succinct" => solution == "rocks",
+        _ => false,
+    }
 }
 
 fn main() -> Result<()> {
-    println!("\n🧩 Welcome to the zk Puzzle Game!");
-    println!("Prove your knowledge without revealing the full answer.\n");
+    println!("🧩 Welcome to the zk Puzzle Game with Levels!\n");
 
-    let puzzle = "rust"; // In real ZK, this would be some public input
+    let puzzles = vec!["rust", "succinct"];
+    let mut score = 0;
 
-    print!("Enter your secret solution: ");
-    io::stdout().flush()?;
+    for puzzle in &puzzles {
+        println!("Puzzle: {}", puzzle);
+        print!("Enter your secret solution: ");
+        io::stdout().flush()?;
 
-    let mut solution = String::new();
-    io::stdin().read_line(&mut solution)?;
-    let solution = solution.trim();
+        let mut solution = String::new();
+        io::stdin().read_line(&mut solution)?;
+        let solution = solution.trim();
 
-    if verify_puzzle_solution(puzzle, solution) {
-        println!("✅ Zero-knowledge proof verified! You solved the puzzle!");
-    } else {
-        println!("❌ Verification failed. Try again.");
+        if verify_puzzle_solution(puzzle, solution) {
+            println!("✅ Correct!\n");
+            score += 1;
+        } else {
+            println!("❌ Incorrect. Try next puzzle.\n");
+        }
     }
 
+    println!("Game Over! Your score: {}/{}", score, puzzles.len());
     Ok(())
 }
+
